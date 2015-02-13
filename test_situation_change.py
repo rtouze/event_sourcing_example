@@ -29,7 +29,7 @@ def test_person_creation_event_is_stored_in_timeline(person):
     timeline = CallCheckingEventTimeLineMock()
     service = PersonRegistry(timeline)
     service.create(person)
-    assert timeline.createPersonIsCalled == True
+    assert timeline.addEventIsCalled == True
 
 def test_person_creation_event_is_created_with_expected_set_of_argument(person):
     timeline = ParamCheckingEventTimeLineMock()
@@ -46,26 +46,27 @@ def test_person_changing_status_is_saved_in_the_timeline():
 
 class NoopEventTimeLineMock:
 
-    def createPerson(self, personData):
+    def addEvent(self, eventData):
         pass
 
 class CallCheckingEventTimeLineMock:
     def __init__(self):
-        self.createPersonIsCalled = False
+        self.addEventIsCalled = False
 
-    def createPerson(self, personData):
+    def addEvent(self, eventData):
         """Blah Blah Blah"""
-        self.createPersonIsCalled = True
+        self.addEventIsCalled = True
 
 class ParamCheckingEventTimeLineMock:
     """Blah Blah Blah"""
 
-    def createPerson(self, personData):
-        assert personData['status'] == 1
-        assert personData['address']['street'] == "22 jump street"
-        assert personData['address']['city'] == "New York"
-        assert personData['name']['firstname'] == "John"
-        assert personData['name']['lastname'] == "Doe"
+    def addEvent(self, eventData):
+        assert eventData['type'] == 1
+        assert eventData['status'] == 1
+        assert eventData['address']['street'] == "22 jump street"
+        assert eventData['address']['city'] == "New York"
+        assert eventData['name']['firstname'] == "John"
+        assert eventData['name']['lastname'] == "Doe"
 
 class ChangeStatusEventTimeLineMock:
     def __init__(self):

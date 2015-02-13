@@ -13,7 +13,8 @@ class PersonRegistry:
     def create(self, person):
         """Create a person in the system"""
         self._currentId += 1
-        self.timeline.createPerson({
+        self.timeline.addEvent({
+            'type': EventTimeLine.PERSON_CREATION,
             'status': person.status,
             'address': person.address.to_dict(),
             'name': person.name.to_dict()
@@ -64,6 +65,7 @@ class Address:
 class EventTimeLine:
     """Blah Blah Blah"""
 
+    PERSON_CREATION = 1
     PERSON_STATUS_CHANGE = 2
 
     def __init__(self):
