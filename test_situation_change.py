@@ -36,6 +36,13 @@ def test_person_creation_event_is_created_with_expected_set_of_argument(person):
     service = PersonRegistry(timeline)
     service.create(person)
 
+def test_person_changing_status_is_saved_in_the_timeline():
+    timeline = ChangeStatusEventTimeLineMock()
+    service = PersonRegistry(timeline)
+    personId = 1
+    newStatus = Person.MARRIED
+    service.changeStatus(personId, newStatus)
+    assert timeline.addEventIsCalled == True
 
 class NoopEventTimeLineMock:
 
@@ -59,6 +66,17 @@ class ParamCheckingEventTimeLineMock:
         assert personData['address']['city'] == "New York"
         assert personData['name']['firstname'] == "John"
         assert personData['name']['lastname'] == "Doe"
+
+class ChangeStatusEventTimeLineMock:
+    def __init__(self):
+        self.addEventIsCalled = False
+
+    def addEvent(self, eventData):
+        self.addEventIsCalled = True
+        assert eventData["type"] == 2
+        assert eventData["personId"] == 1
+        assert eventData["newStatus"] == Person.MARRIED
+
 
 
         

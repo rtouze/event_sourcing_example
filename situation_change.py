@@ -19,9 +19,18 @@ class PersonRegistry:
         })
         return self._currentId;
 
+    def changeStatus(self, personId, newStatus):
+        self.timeline.addEvent({
+            'type': EventTimeLine.PERSON_STATUS_CHANGE,
+            'personId': personId,
+            'newStatus': newStatus
+        })
+
+
 class Person:
 
     SINGLE = 1
+    MARRIED = 2
     def __init__(self, status, address, name):
         self.status = status
         self.address = address
@@ -46,3 +55,12 @@ class Address:
 
     def to_dict(self):
         return { 'street': self.street, 'city': self.city }
+
+class EventTimeLine:
+    """Blah Blah Blah"""
+
+    PERSON_STATUS_CHANGE = 2
+
+    def __init__(self):
+        """Blah Blah Blah"""
+        
