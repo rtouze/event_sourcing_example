@@ -3,6 +3,7 @@
 
 import datetime
 
+
 # {{{ Services
 class PersonRegistry:
     """Provide services to deal with people"""
@@ -10,7 +11,7 @@ class PersonRegistry:
     def __init__(self, timeline):
         """Initialize timeline event"""
         self.timeline = timeline
-        self._currentId = 0 
+        self._currentId = 0
 
     def create(self, person):
         """Create a person in the system"""
@@ -22,7 +23,7 @@ class PersonRegistry:
             'address': person.address.to_dict(),
             'name': person.name.to_dict()
         })
-        return self._currentId;
+        return self._currentId
 
     def changeStatus(self, personId, newStatus):
         self.timeline.addEvent({
@@ -31,6 +32,7 @@ class PersonRegistry:
             'newStatus': newStatus
         })
 # }}}
+
 
 # {{{ Domain model
 class Person:
@@ -43,43 +45,43 @@ class Person:
         self.address = address
         self.name = name
 
-class Name:
-    """Blah Blah Blah"""
 
+class Name:
     def __init__(self, firstname, lastname):
         """Blah Blah Blah"""
         self.firstname, self.lastname = firstname, lastname
 
     def to_dict(self):
         return {'firstname': self.firstname, 'lastname': self.lastname}
-        
+
 
 class Address:
-
     def __init__(self, street, city):
         self.street = street
         self.city = city
 
     def to_dict(self):
-        return { 'street': self.street, 'city': self.city }
+        return {'street': self.street, 'city': self.city}
 # }}}
 
 
 class EventTimeLine:
-    """Blah Blah Blah"""
+    """Basically, the list of all events in the system. Allows to add an event.
+    The object itself is iterable if you want to browse the created events."""
 
     PERSON_CREATION = 1
     PERSON_STATUS_CHANGE = 2
 
     def __init__(self):
+        """Initialize the inner event list"""
         self.event_list = []
 
     def addEvent(self, eventData):
+        """Add an event in the event list."""
         eventData['_datetime'] = datetime.datetime.today()
         self.event_list.append(eventData)
 
     def __iter__(self):
         for e in self.event_list:
             yield e
-        
-# vim: fdm=marker       
+# vim: fdm=marker
