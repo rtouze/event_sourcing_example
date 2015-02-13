@@ -17,6 +17,7 @@ class PersonRegistry:
         self._currentId += 1
         self.timeline.addEvent({
             'type': EventTimeLine.PERSON_CREATION,
+            'personId': self._currentId,
             'status': person.status,
             'address': person.address.to_dict(),
             'name': person.name.to_dict()

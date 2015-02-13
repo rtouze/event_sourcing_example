@@ -68,6 +68,7 @@ class ParamCheckingEventTimeLineMock:
     def addEvent(self, eventData):
         assert eventData['type'] == 1
         assert eventData['status'] == 1
+        assert eventData['personId'] == 1
         assert eventData['address']['street'] == "22 jump street"
         assert eventData['address']['city'] == "New York"
         assert eventData['name']['firstname'] == "John"
