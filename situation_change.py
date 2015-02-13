@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
+
 # {{{ Services
 class PersonRegistry:
     """Provide services to deal with people"""
@@ -69,6 +71,14 @@ class EventTimeLine:
     PERSON_STATUS_CHANGE = 2
 
     def __init__(self):
-        """Blah Blah Blah"""
+        self.event_list = []
+
+    def addEvent(self, eventData):
+        eventData['_datetime'] = datetime.datetime.today()
+        self.event_list.append(eventData)
+
+    def __iter__(self):
+        for e in self.event_list:
+            yield e
         
 # vim: fdm=marker       

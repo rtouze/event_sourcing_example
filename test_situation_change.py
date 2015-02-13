@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from situation_change import *
+from datetime import date
 import pytest
 
+# {{{ PersonRegistry tests
 @pytest.fixture
 def person():
     return Person(
@@ -25,16 +27,19 @@ def test_a_person_id_is_generated_when_a_person_is_created(person):
     returned_id = service.create(person)
     assert returned_id != 0
 
+
 def test_person_creation_event_is_stored_in_timeline(person):
     timeline = CallCheckingEventTimeLineMock()
     service = PersonRegistry(timeline)
     service.create(person)
     assert timeline.addEventIsCalled == True
 
+
 def test_person_creation_event_is_created_with_expected_set_of_argument(person):
     timeline = ParamCheckingEventTimeLineMock()
     service = PersonRegistry(timeline)
     service.create(person)
+
 
 def test_person_changing_status_is_saved_in_the_timeline():
     timeline = ChangeStatusEventTimeLineMock()
@@ -43,9 +48,11 @@ def test_person_changing_status_is_saved_in_the_timeline():
     newStatus = Person.MARRIED
     service.changeStatus(personId, newStatus)
     assert timeline.addEventIsCalled == True
+# }}}
 
+
+# {{{ Mocks for person registry tests
 class NoopEventTimeLineMock:
-
     def addEvent(self, eventData):
         pass
 
@@ -58,8 +65,6 @@ class CallCheckingEventTimeLineMock:
         self.addEventIsCalled = True
 
 class ParamCheckingEventTimeLineMock:
-    """Blah Blah Blah"""
-
     def addEvent(self, eventData):
         assert eventData['type'] == 1
         assert eventData['status'] == 1
@@ -77,5 +82,28 @@ class ChangeStatusEventTimeLineMock:
         assert eventData["type"] == 2
         assert eventData["personId"] == 1
         assert eventData["newStatus"] == Person.MARRIED
+# }}}
+
+def test_sent_events_are_retrieved():
+    event_tl = EventTimeLine()
+    event_tl.addEvent({
+        'type': EventTimeLine.PERSON_CREATION,
+        'personId': 1,
+        'status': Person.SINGLE,
+        'name' : { 'firstname': 'Foo', 'lastname': 'Bar' }
+    })
+    event_tl.addEvent({
+        'type': EventTimeLine.PERSON_STATUS_CHANGE,
+        'personId': 1,
+        'newStatus': Person.MARRIED
+    })
+    event_list = list(event_tl)
+    today = date.today().day
+    assert len(event_list) == 2
+    assert event_list[0]['type'] == EventTimeLine.PERSON_CREATION
+    assert event_list[0]['_datetime'].day == today
+    assert event_list[1]['type'] == EventTimeLine.PERSON_STATUS_CHANGE
+    assert event_list[1]['_datetime'].day == today
+
 
 # vim: fdm=marker       
