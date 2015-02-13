@@ -14,18 +14,31 @@ class PersonRegistry:
         self._currentId += 1
         self.timeline.createPerson({
             'status': person.status,
-            'address': person.address.to_dict()
+            'address': person.address.to_dict(),
+            'name': person.name.to_dict()
         })
         return self._currentId;
 
 class Person:
 
     SINGLE = 1
-    def __init__(self, status, address):
+    def __init__(self, status, address, name):
         self.status = status
         self.address = address
+        self.name = name
 
-class Adress:
+class Name:
+    """Blah Blah Blah"""
+
+    def __init__(self, firstname, lastname):
+        """Blah Blah Blah"""
+        self.firstname, self.lastname = firstname, lastname
+
+    def to_dict(self):
+        return {'firstname': self.firstname, 'lastname': self.lastname}
+        
+
+class Address:
 
     def __init__(self, street, city):
         self.street = street

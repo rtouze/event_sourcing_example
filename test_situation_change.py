@@ -6,7 +6,11 @@ import pytest
 
 @pytest.fixture
 def person():
-    return Person(Person.SINGLE, Adress(street="22 jump street", city="New York"))
+    return Person(
+        status=Person.SINGLE,
+        address=Address(street="22 jump street", city="New York"),
+        name=Name(firstname="John", lastname="Doe")
+    )
 
 
 def test_a_person_id_is_generated_when_a_person_is_created(person):
@@ -18,7 +22,6 @@ def test_a_person_id_is_generated_when_a_person_is_created(person):
     service = PersonRegistry(timeline)
 
     # person data object creation
-    #person = Person(Person.SINGLE, Adress(street="22 jump street", city="New York"))
     returned_id = service.create(person)
     assert returned_id != 0
 
@@ -54,6 +57,8 @@ class ParamCheckingEventTimeLineMock:
         assert personData['status'] == 1
         assert personData['address']['street'] == "22 jump street"
         assert personData['address']['city'] == "New York"
+        assert personData['name']['firstname'] == "John"
+        assert personData['name']['lastname'] == "Doe"
 
 
         
