@@ -77,7 +77,4 @@ class ChangeStatusEventTimeLineMock:
         assert eventData["personId"] == 1
         assert eventData["newStatus"] == Person.MARRIED
 
-
-
-        
-        
+# vim: fdm=marker       

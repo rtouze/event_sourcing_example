@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# {{{ Services
 class PersonRegistry:
     """Provide services to deal with people"""
 
@@ -25,12 +26,14 @@ class PersonRegistry:
             'personId': personId,
             'newStatus': newStatus
         })
+# }}}
 
-
+# {{{ Domain model
 class Person:
 
     SINGLE = 1
     MARRIED = 2
+
     def __init__(self, status, address, name):
         self.status = status
         self.address = address
@@ -55,6 +58,8 @@ class Address:
 
     def to_dict(self):
         return { 'street': self.street, 'city': self.city }
+# }}}
+
 
 class EventTimeLine:
     """Blah Blah Blah"""
@@ -64,3 +69,4 @@ class EventTimeLine:
     def __init__(self):
         """Blah Blah Blah"""
         
+# vim: fdm=marker       
