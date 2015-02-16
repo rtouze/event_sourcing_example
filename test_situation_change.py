@@ -32,7 +32,7 @@ def test_person_creation_event_is_stored_in_timeline(person):
     timeline = CallCheckingEventTimeLineMock()
     service = PersonRegistry(timeline)
     service.create(person)
-    assert timeline.addEventIsCalled == True
+    assert timeline.add_event_is_called == True
 
 
 def test_person_creation_event_is_created_with_expected_set_of_argument(person):
@@ -47,53 +47,83 @@ def test_person_changing_status_is_saved_in_the_timeline():
     personId = 1
     newStatus = Person.MARRIED
     service.changeStatus(personId, newStatus)
-    assert timeline.addEventIsCalled == True
+    assert timeline.add_event_is_called == True
+
+def test_person_can_be_retrieved_by_name():
+    # EventTimeLine object is iterable therfore I can
+    # replace it with a simple list to test read access.
+    timeline = [{
+            'type': EventTimeLine.PERSON_CREATION,
+            'personId': 1,
+            'status': Person.SINGLE,
+            'name': {'firstname': 'John', 'lastname': 'Rambo'},
+            'address': {'street': 'Somewhere', 'city': 'Thailand'}
+        },
+        {
+            'type': EventTimeLine.PERSON_CREATION,
+            'personId': 2,
+            'status': Person.SINGLE,
+            'name': { 'firstname': 'Ada', 'lastname': 'Wong' }
+        },
+        {
+            'type': EventTimeLine.PERSON_STATUS_CHANGE,
+            'personId': 1,
+            'newStatus': Person.MARRIED
+        }]
+    service = PersonRegistry(timeline)
+    person = service.get_person_by_id(1)
+    assert person.name.lastname == 'Rambo'
+    assert person.status == Person.MARRIED
+    assert person.status_label == "married"
+
+    person2 = service.get_person_by_id(2)
+    assert person2.status_label == "single"
 # }}}
 
 
 # {{{ Mocks for person registry tests
 class NoopEventTimeLineMock:
-    def addEvent(self, eventData):
+    def add_event(self, event_data):
         pass
 
 class CallCheckingEventTimeLineMock:
     def __init__(self):
-        self.addEventIsCalled = False
+        self.add_event_is_called = False
 
-    def addEvent(self, eventData):
+    def add_event(self, event_data):
         """Blah Blah Blah"""
-        self.addEventIsCalled = True
+        self.add_event_is_called = True
 
 class ParamCheckingEventTimeLineMock:
-    def addEvent(self, eventData):
-        assert eventData['type'] == 1
-        assert eventData['status'] == 1
-        assert eventData['personId'] == 1
-        assert eventData['address']['street'] == "22 jump street"
-        assert eventData['address']['city'] == "New York"
-        assert eventData['name']['firstname'] == "John"
-        assert eventData['name']['lastname'] == "Doe"
+    def add_event(self, event_data):
+        assert event_data['type'] == 1
+        assert event_data['status'] == 1
+        assert event_data['personId'] == 1
+        assert event_data['address']['street'] == "22 jump street"
+        assert event_data['address']['city'] == "New York"
+        assert event_data['name']['firstname'] == "John"
+        assert event_data['name']['lastname'] == "Doe"
 
 class ChangeStatusEventTimeLineMock:
     def __init__(self):
-        self.addEventIsCalled = False
+        self.add_event_is_called = False
 
-    def addEvent(self, eventData):
-        self.addEventIsCalled = True
-        assert eventData["type"] == 2
-        assert eventData["personId"] == 1
-        assert eventData["newStatus"] == Person.MARRIED
+    def add_event(self, event_data):
+        self.add_event_is_called = True
+        assert event_data["type"] == 2
+        assert event_data["personId"] == 1
+        assert event_data["newStatus"] == Person.MARRIED
 # }}}
 
 def test_sent_events_are_retrieved():
     event_tl = EventTimeLine()
-    event_tl.addEvent({
+    event_tl.add_event({
         'type': EventTimeLine.PERSON_CREATION,
         'personId': 1,
         'status': Person.SINGLE,
         'name' : { 'firstname': 'Foo', 'lastname': 'Bar' }
     })
-    event_tl.addEvent({
+    event_tl.add_event({
         'type': EventTimeLine.PERSON_STATUS_CHANGE,
         'personId': 1,
         'newStatus': Person.MARRIED

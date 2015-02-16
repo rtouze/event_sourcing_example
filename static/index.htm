@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Event Sourcing Example</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <h1>Event Sourcing Example</h1>
+    <p>Fill the form to create a person.</p>
+    <div id="form_placeholder">
+      <form method="post" action="/create">
+        <div class="question">
+          <div class="label">Lastname:</div>
+          <div class="field"><input type="text" name="lastname" /></div>
+        </div>
+        <div class="question">
+          <div class="label">Firstname:</div>
+          <div class="field"><input type="text" name="firstname" /></div>
+        </div>
+        <div class="question">
+          <div class="label">Status:</div>
+          <div class="field">
+            <select name="status">
+              <option value="1">Single</option>
+              <option value="2">Married</option>
+            </select>
+          </div>
+        </div>
+        <div class="question">
+          <input type="submit" value="Submit" />
+        </div>
+
+      </form>
+    </div>
+  </body>
+</html>
+

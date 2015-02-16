@@ -16,7 +16,7 @@ class PersonRegistry:
     def create(self, person):
         """Create a person in the system"""
         self._currentId += 1
-        self.timeline.addEvent({
+        self.timeline.add_event({
             'type': EventTimeLine.PERSON_CREATION,
             'personId': self._currentId,
             'status': person.status,
@@ -26,11 +26,34 @@ class PersonRegistry:
         return self._currentId
 
     def changeStatus(self, personId, newStatus):
-        self.timeline.addEvent({
+        self.timeline.add_event({
             'type': EventTimeLine.PERSON_STATUS_CHANGE,
             'personId': personId,
             'newStatus': newStatus
         })
+
+    def get_person_by_id(self, demanded_id):
+        returned_person = None
+        print("Timeline:" + str(list(self.timeline)))
+        person_events = (
+            p for p in self.timeline 
+            if p['personId'] == demanded_id
+        )
+        for event in person_events:
+            print('Event:' + str(event))
+            if event['type'] == EventTimeLine.PERSON_CREATION:
+                returned_person = Person(
+                    event['status'],
+                    None,
+                    Name(
+                        event['name']['firstname'],
+                        event['name']['lastname']
+                        )
+                )
+            if event['type'] == EventTimeLine.PERSON_STATUS_CHANGE:
+                returned_person.status = event['newStatus']
+        return returned_person
+        
 # }}}
 
 
@@ -39,11 +62,19 @@ class Person:
 
     SINGLE = 1
     MARRIED = 2
+    LABELS = {
+        1: 'single',
+        2: 'married'
+    }
 
     def __init__(self, status, address, name):
-        self.status = status
+        self.status = int(status)
         self.address = address
         self.name = name
+
+    @property
+    def status_label(self):
+        return self.LABELS[self.status]
 
 
 class Name:
@@ -76,10 +107,10 @@ class EventTimeLine:
         """Initialize the inner event list"""
         self.event_list = []
 
-    def addEvent(self, eventData):
+    def add_event(self, event_data):
         """Add an event in the event list."""
-        eventData['_datetime'] = datetime.datetime.today()
-        self.event_list.append(eventData)
+        event_data['_datetime'] = datetime.datetime.today()
+        self.event_list.append(event_data)
 
     def __iter__(self):
         for e in self.event_list:
