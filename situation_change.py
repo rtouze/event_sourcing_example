@@ -11,7 +11,9 @@ class PersonRegistry:
     def __init__(self, timeline):
         """Initialize timeline event"""
         self.timeline = timeline
+        timeline.add_subscriber(self)
         self._currentId = 0
+        self._registry = {}
 
     def create(self, person):
         """Create a person in the system"""
@@ -31,6 +33,20 @@ class PersonRegistry:
             'personId': personId,
             'newStatus': newStatus
         })
+
+    def notify(self, data):
+        if 'personId' in data.keys():
+            person_id = data['personId']
+            if data['type'] = EventTimeLine.PERSON_CREATION:
+                self._registry[person_id] = {
+                    'name' = data['name'],
+                    'address' = data['address'],
+                    'status' = data['status']
+                }
+            if data['type'] = EventTimeLine.PERSON_STATUS_CHANGE:
+                self._registry['personId']['status'] = data['status']
+
+
 
     def get_person_by_id(self, demanded_id):
         returned_person = None

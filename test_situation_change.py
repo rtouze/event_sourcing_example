@@ -52,31 +52,30 @@ def test_person_changing_status_is_saved_in_the_timeline():
 def test_person_can_be_retrieved_by_name():
     # EventTimeLine object is iterable therfore I can
     # replace it with a simple list to test read access.
-    timeline = [{
-            'type': EventTimeLine.PERSON_CREATION,
-            'personId': 1,
-            'status': Person.SINGLE,
-            'name': {'firstname': 'John', 'lastname': 'Rambo'},
-            'address': {'street': 'Somewhere', 'city': 'Thailand'}
-        },
-        {
-            'type': EventTimeLine.PERSON_CREATION,
-            'personId': 2,
-            'status': Person.SINGLE,
-            'name': { 'firstname': 'Ada', 'lastname': 'Wong' }
-        },
-        {
-            'type': EventTimeLine.PERSON_STATUS_CHANGE,
-            'personId': 1,
-            'newStatus': Person.MARRIED
-        }]
-    service = PersonRegistry(timeline)
-    person = service.get_person_by_id(1)
+    
+    service = PersonRegistry(EventTimeLine())
+    person_id_1 = service.create(
+        Person(
+            Person.SINGLE,
+            Address('Somewhere', 'Thailand'),
+            Name('John', 'Rambo')
+        )
+    )
+    person_id_2 = service.create(
+        Person(
+            Person.SINGLE,
+            Address('Somewhere else', 'Zanzibar'),
+            Name('Ada', 'Wong')
+        )
+    )
+    service.change_status(person_id_1, Person.MARRIED)
+
+    person = service.get_person_by_id(person_id_1)
     assert person.name.lastname == 'Rambo'
     assert person.status == Person.MARRIED
     assert person.status_label == "married"
 
-    person2 = service.get_person_by_id(2)
+    person2 = service.get_person_by_id(person_id_2)
     assert person2.status_label == "single"
 # }}}
 
