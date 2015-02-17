@@ -46,7 +46,7 @@ def test_person_changing_status_is_saved_in_the_timeline():
     service = PersonRegistry(timeline)
     personId = 1
     newStatus = Person.MARRIED
-    service.changeStatus(personId, newStatus)
+    service.change_status(personId, newStatus)
     assert timeline.add_event_is_called == True
 
 def test_person_can_be_retrieved_by_name():

@@ -25,7 +25,7 @@ class PersonRegistry:
         })
         return self._currentId
 
-    def changeStatus(self, personId, newStatus):
+    def change_status(self, personId, newStatus):
         self.timeline.add_event({
             'type': EventTimeLine.PERSON_STATUS_CHANGE,
             'personId': personId,
@@ -34,13 +34,11 @@ class PersonRegistry:
 
     def get_person_by_id(self, demanded_id):
         returned_person = None
-        print("Timeline:" + str(list(self.timeline)))
         person_events = (
             p for p in self.timeline 
             if p['personId'] == demanded_id
         )
         for event in person_events:
-            print('Event:' + str(event))
             if event['type'] == EventTimeLine.PERSON_CREATION:
                 returned_person = Person(
                     event['status'],
