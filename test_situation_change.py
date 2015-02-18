@@ -49,7 +49,7 @@ def test_person_changing_status_is_saved_in_the_timeline():
     service.change_status(personId, newStatus)
     assert timeline.add_event_is_called == True
 
-def test_person_can_be_retrieved_by_name():
+def test_person_can_be_retrieved_by_id_with_actual_status():
     # EventTimeLine object is iterable therfore I can
     # replace it with a simple list to test read access.
     tl = EventTimeLine()
@@ -80,6 +80,24 @@ def test_person_can_be_retrieved_by_name():
 
     person2 = read_registry.get_person_by_id(person_id_2)
     assert person2.status_label == "single"
+
+def test_that_the_system_is_affected_by_address_change():
+    tl = EventTimeLine()
+    read_registry = PersonRegistryReader()
+    tl.add_subscriber(read_registry)
+    
+    service = PersonRegistry(tl)
+    person_id_1 = service.create(
+        Person(
+            Person.SINGLE,
+            Address('Somewhere', 'Thailand'),
+            Name('John', 'Rambo')
+        )
+    )
+    service.move_house(person_id_1, Address('Some beach', 'Phuket'))
+    person = read_registry.get_person_by_id(person_id_1)
+    assert person.address.street == 'Some beach'
+    assert person.address.city == 'Phuket'
 # }}}
 
 

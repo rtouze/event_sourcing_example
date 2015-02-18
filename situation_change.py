@@ -40,7 +40,19 @@ class PersonRegistry:
             'newStatus': newStatus
         })
 
+    def move_house(self, person_id, new_address):
+        """Change the address of a person"""
+        self._timeline.add_event({
+            'type': EventTimeLine.PERSON_MOVE,
+            'personId': person_id,
+            'newAddress': {
+                'street': new_address.street,
+                'city': new_address.city
+            }
+        })
+# }}}
 
+# {{{ PersonRegistryReader
 class PersonRegistryReader:
     """PersonRegistry aimed at read access"""
 
@@ -61,8 +73,12 @@ class PersonRegistryReader:
                     'address': data['address'],
                     'status': data['status']
                 }
+
             if data['type'] == EventTimeLine.PERSON_STATUS_CHANGE:
                 self._registry[person_id]['status'] = data['newStatus']
+
+            if data['type'] == EventTimeLine.PERSON_MOVE:
+                self._registry[person_id]['address'] = data['newAddress']
 
     def get_person_by_id(self, demanded_id):
         """Retrieve a person from it's identifier in the system."""
@@ -82,8 +98,6 @@ class PersonRegistryReader:
 
     def __hash__(self):
         return id(self)
-        
-        
 # }}}
 
 
@@ -125,13 +139,14 @@ class Address:
         return {'street': self.street, 'city': self.city}
 # }}}
 
-
+# {{{ EventTimeLine
 class EventTimeLine:
     """Basically, the list of all events in the system. Allows to add an event.
     The object itself is iterable if you want to browse the created events."""
 
     PERSON_CREATION = 1
     PERSON_STATUS_CHANGE = 2
+    PERSON_MOVE = 3
 
     def __init__(self):
         """Initialize the inner event list"""
@@ -154,9 +169,9 @@ class EventTimeLine:
         """Notify all the subscribers of a change, sending them event_data"""
         for subs in self._subscribers:
             subs.notify(event_data)
-        
 
     def __iter__(self):
         for e in self.event_list:
             yield e
+# }}}
 # vim: fdm=marker
