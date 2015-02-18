@@ -16,6 +16,7 @@ app = bottle.Bottle()
 def index():
     return bottle.static_file('index.htm', 'static')
 
+
 @app.route('/create', method='POST')
 def create():
     forms = bottle.request.forms
@@ -27,14 +28,31 @@ def create():
     )
     bottle.redirect('/{0}'.format(person_id))
 
+
 @app.route('/<person_id>')
+@bottle.view('person')
 def get(person_id):
     p = read_registry.get_person_by_id(int(person_id))
-    return "It's {0} {1}, she or he is {2}, and has version {3}".format(
-        p.name.firstname,
-        p.name.lastname,
-        p.status_label,
-        p.version)
+    return {
+        'p': p,
+        'person_id': person_id,
+        'statuses': [(Person.MARRIED, 'Married'), (Person.SINGLE, 'Single')]
+    }
 
 
+@app.route('/<person_id>/change_address', method='POST')
+def change_address(person_id):
+    forms = bottle.request.forms
+    registry.move_house(int(person_id), Address(forms['new_street'], forms['new_city']))
+    bottle.redirect('/{0}'.format(person_id))
+
+
+@app.route('/<person_id>/change_status', method='POST')
+def change_status(person_id):
+    forms = bottle.request.forms
+    registry.change_status(int(person_id), int(forms['new_status']))
+    bottle.redirect('/{0}'.format(person_id))
+
+
+bottle.debug(True)
 app.run(host='localhost', port=8080, reloader=True)

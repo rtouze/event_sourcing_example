@@ -107,6 +107,7 @@ class PersonRegistryReader:
         return id(self)
 # }}}
 
+# {{{ BasicLogger
 class BasicLogger:
     """Basic logger that can be attached to the event source"""
 
@@ -124,6 +125,7 @@ class BasicLogger:
 
     def notify(self, data):
         self._logger.info(str(data))
+# }}}
 
 # {{{ Domain model
 class Person:
