@@ -10,8 +10,7 @@ class PersonRegistry:
 
     def __init__(self, timeline):
         """Initialize timeline event"""
-        self.timeline = timeline
-        timeline.add_subscriber(self)
+        self._timeline = timeline
         self._current_id = 0
         self._registry = {}
 
@@ -24,7 +23,7 @@ class PersonRegistry:
     def create(self, person):
         """Create a person in the system"""
         current_id = self._generate_person_id()
-        self.timeline.add_event({
+        self._timeline.add_event({
             'type': EventTimeLine.PERSON_CREATION,
             'personId': current_id,
             'status': person.status,
@@ -35,11 +34,19 @@ class PersonRegistry:
 
     def change_status(self, personId, newStatus):
         """Ask to change the status of a person"""
-        self.timeline.add_event({
+        self._timeline.add_event({
             'type': EventTimeLine.PERSON_STATUS_CHANGE,
             'personId': personId,
             'newStatus': newStatus
         })
+
+
+class PersonRegistryReader:
+    """PersonRegistry aimed at read access"""
+
+    def __init__(self):
+        """Initialize the read registry"""
+        self._registry = {}
 
     def notify(self, data):
         """Get notified that something happened in the system. It should be
@@ -56,7 +63,6 @@ class PersonRegistry:
                 }
             if data['type'] == EventTimeLine.PERSON_STATUS_CHANGE:
                 self._registry[person_id]['status'] = data['newStatus']
-
 
     def get_person_by_id(self, demanded_id):
         """Retrieve a person from it's identifier in the system."""
@@ -76,6 +82,7 @@ class PersonRegistry:
 
     def __hash__(self):
         return id(self)
+        
         
 # }}}
 

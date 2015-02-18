@@ -52,8 +52,11 @@ def test_person_changing_status_is_saved_in_the_timeline():
 def test_person_can_be_retrieved_by_name():
     # EventTimeLine object is iterable therfore I can
     # replace it with a simple list to test read access.
+    tl = EventTimeLine()
+    read_registry = PersonRegistryReader()
+    tl.add_subscriber(read_registry)
     
-    service = PersonRegistry(EventTimeLine())
+    service = PersonRegistry(tl)
     person_id_1 = service.create(
         Person(
             Person.SINGLE,
@@ -70,12 +73,12 @@ def test_person_can_be_retrieved_by_name():
     )
     service.change_status(person_id_1, Person.MARRIED)
 
-    person = service.get_person_by_id(person_id_1)
+    person = read_registry.get_person_by_id(person_id_1)
     assert person.name.lastname == 'Rambo'
     assert person.status == Person.MARRIED
     assert person.status_label == "married"
 
-    person2 = service.get_person_by_id(person_id_2)
+    person2 = read_registry.get_person_by_id(person_id_2)
     assert person2.status_label == "single"
 # }}}
 

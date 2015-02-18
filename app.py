@@ -6,8 +6,10 @@ from situation_change import *
 
 timeline = EventTimeLine()
 registry = PersonRegistry(timeline)
-app = bottle.Bottle()
+read_registry = PersonRegistryReader()
+timeline.add_subscriber(read_registry)
 
+app = bottle.Bottle()
 
 @app.route('/')
 def index():
@@ -26,7 +28,7 @@ def create():
 
 @app.route('/<person_id>')
 def get(person_id):
-    p = registry.get_person_by_id(int(person_id))
+    p = read_registry.get_person_by_id(int(person_id))
     return "It's {0} {1}, he is {2}".format(
         p.name.firstname,
         p.name.lastname,
