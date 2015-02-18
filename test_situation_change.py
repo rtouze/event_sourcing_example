@@ -85,6 +85,10 @@ class NoopEventTimeLineMock:
     def add_event(self, event_data):
         pass
 
+    def add_subscriber(self, object):
+        """Blah Blah Blah"""
+        pass
+
 class CallCheckingEventTimeLineMock:
     def __init__(self):
         self.add_event_is_called = False
@@ -92,6 +96,11 @@ class CallCheckingEventTimeLineMock:
     def add_event(self, event_data):
         """Blah Blah Blah"""
         self.add_event_is_called = True
+
+    def add_subscriber(self, object):
+        """Blah Blah Blah"""
+        pass
+        
 
 class ParamCheckingEventTimeLineMock:
     def add_event(self, event_data):
@@ -103,6 +112,10 @@ class ParamCheckingEventTimeLineMock:
         assert event_data['name']['firstname'] == "John"
         assert event_data['name']['lastname'] == "Doe"
 
+    def add_subscriber(self, object):
+        """Blah Blah Blah"""
+        pass
+
 class ChangeStatusEventTimeLineMock:
     def __init__(self):
         self.add_event_is_called = False
@@ -112,6 +125,10 @@ class ChangeStatusEventTimeLineMock:
         assert event_data["type"] == 2
         assert event_data["personId"] == 1
         assert event_data["newStatus"] == Person.MARRIED
+
+    def add_subscriber(self, object):
+        """Blah Blah Blah"""
+        pass
 # }}}
 
 def test_sent_events_are_retrieved():

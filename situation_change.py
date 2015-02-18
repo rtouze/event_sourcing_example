@@ -37,13 +37,13 @@ class PersonRegistry:
     def notify(self, data):
         if 'personId' in data.keys():
             person_id = data['personId']
-            if data['type'] = EventTimeLine.PERSON_CREATION:
+            if data['type'] == EventTimeLine.PERSON_CREATION:
                 self._registry[person_id] = {
-                    'name' = data['name'],
-                    'address' = data['address'],
-                    'status' = data['status']
+                    'name': data['name'],
+                    'address': data['address'],
+                    'status': data['status']
                 }
-            if data['type'] = EventTimeLine.PERSON_STATUS_CHANGE:
+            if data['type'] == EventTimeLine.PERSON_STATUS_CHANGE:
                 self._registry['personId']['status'] = data['status']
 
 
@@ -125,6 +125,10 @@ class EventTimeLine:
         """Add an event in the event list."""
         event_data['_datetime'] = datetime.datetime.today()
         self.event_list.append(event_data)
+
+    def add_subscriber(self, object):
+        """Blah Blah Blah"""
+        pass
 
     def __iter__(self):
         for e in self.event_list:
