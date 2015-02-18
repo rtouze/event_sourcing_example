@@ -77,9 +77,11 @@ def test_person_can_be_retrieved_by_id_with_actual_status():
     assert person.name.lastname == 'Rambo'
     assert person.status == Person.MARRIED
     assert person.status_label == "married"
+    assert person.version == 2
 
     person2 = read_registry.get_person_by_id(person_id_2)
     assert person2.status_label == "single"
+    assert person2.version == 1
 
 def test_that_the_system_is_affected_by_address_change():
     tl = EventTimeLine()
@@ -98,6 +100,7 @@ def test_that_the_system_is_affected_by_address_change():
     person = read_registry.get_person_by_id(person_id_1)
     assert person.address.street == 'Some beach'
     assert person.address.city == 'Phuket'
+    assert person.version == 2
 # }}}
 
 

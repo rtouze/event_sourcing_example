@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import logging
 
 
 # {{{ Services
@@ -71,14 +72,19 @@ class PersonRegistryReader:
                 self._registry[person_id] = {
                     'name': data['name'],
                     'address': data['address'],
-                    'status': data['status']
+                    'status': data['status'],
+                    'version': 1
                 }
 
             if data['type'] == EventTimeLine.PERSON_STATUS_CHANGE:
-                self._registry[person_id]['status'] = data['newStatus']
+                p = self._registry[person_id]
+                p['status'] = data['newStatus']
+                p['version'] += 1
 
             if data['type'] == EventTimeLine.PERSON_MOVE:
-                self._registry[person_id]['address'] = data['newAddress']
+                p = self._registry[person_id]
+                p['address'] = data['newAddress']
+                p['version'] += 1
 
     def get_person_by_id(self, demanded_id):
         """Retrieve a person from it's identifier in the system."""
@@ -92,7 +98,8 @@ class PersonRegistryReader:
             Name(
                 stored_person['name']['firstname'],
                 stored_person['name']['lastname']
-                )
+                ),
+            stored_person['version']
         )
         return returned_person
 
@@ -100,6 +107,23 @@ class PersonRegistryReader:
         return id(self)
 # }}}
 
+class BasicLogger:
+    """Basic logger that can be attached to the event source"""
+
+    def __init__(self):
+        """Blah Blah Blah"""
+        self._logger = logging.getLogger('EventSent')
+        self._logger.setLevel(level=logging.INFO)
+        handler = logging.StreamHandler()
+        handler.setLevel(level=logging.INFO)
+        formatter = logging.Formatter(
+            '%(name)s - %(levelname)s - %(asctime)s - %(message)s'
+        )
+        handler.setFormatter(formatter)
+        self._logger.addHandler(handler)
+
+    def notify(self, data):
+        self._logger.info(str(data))
 
 # {{{ Domain model
 class Person:
@@ -111,10 +135,11 @@ class Person:
         2: 'married'
     }
 
-    def __init__(self, status, address, name):
+    def __init__(self, status, address, name, version=1):
         self.status = int(status)
         self.address = address
         self.name = name
+        self.version = version
 
     @property
     def status_label(self):

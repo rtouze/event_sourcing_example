@@ -8,6 +8,7 @@ timeline = EventTimeLine()
 registry = PersonRegistry(timeline)
 read_registry = PersonRegistryReader()
 timeline.add_subscriber(read_registry)
+timeline.add_subscriber(BasicLogger())
 
 app = bottle.Bottle()
 
@@ -29,10 +30,11 @@ def create():
 @app.route('/<person_id>')
 def get(person_id):
     p = read_registry.get_person_by_id(int(person_id))
-    return "It's {0} {1}, he is {2}".format(
+    return "It's {0} {1}, she or he is {2}, and has version {3}".format(
         p.name.firstname,
         p.name.lastname,
-        p.status_label)
+        p.status_label,
+        p.version)
 
 
 app.run(host='localhost', port=8080, reloader=True)
