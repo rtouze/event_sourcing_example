@@ -12,22 +12,29 @@ class PersonRegistry:
         """Initialize timeline event"""
         self.timeline = timeline
         timeline.add_subscriber(self)
-        self._currentId = 0
+        self._current_id = 0
         self._registry = {}
+
+    def _generate_person_id(self):
+        # Generate a system identifier. In a real application, it should be
+        # externalized or ensure that a unique id is generated.
+        self._current_id += 1
+        return self._current_id
 
     def create(self, person):
         """Create a person in the system"""
-        self._currentId += 1
+        current_id = self._generate_person_id()
         self.timeline.add_event({
             'type': EventTimeLine.PERSON_CREATION,
-            'personId': self._currentId,
+            'personId': current_id,
             'status': person.status,
             'address': person.address.to_dict(),
             'name': person.name.to_dict()
         })
-        return self._currentId
+        return current_id
 
     def change_status(self, personId, newStatus):
+        """Ask to change the status of a person"""
         self.timeline.add_event({
             'type': EventTimeLine.PERSON_STATUS_CHANGE,
             'personId': personId,
@@ -35,6 +42,10 @@ class PersonRegistry:
         })
 
     def notify(self, data):
+        """Get notified that something happened in the system. It should be
+        called by an event emmitter only to update internal data
+        representation."""
+
         if 'personId' in data.keys():
             person_id = data['personId']
             if data['type'] == EventTimeLine.PERSON_CREATION:
@@ -44,29 +55,27 @@ class PersonRegistry:
                     'status': data['status']
                 }
             if data['type'] == EventTimeLine.PERSON_STATUS_CHANGE:
-                self._registry['personId']['status'] = data['status']
-
+                self._registry[person_id]['status'] = data['newStatus']
 
 
     def get_person_by_id(self, demanded_id):
-        returned_person = None
-        person_events = (
-            p for p in self.timeline 
-            if p['personId'] == demanded_id
-        )
-        for event in person_events:
-            if event['type'] == EventTimeLine.PERSON_CREATION:
-                returned_person = Person(
-                    event['status'],
-                    None,
-                    Name(
-                        event['name']['firstname'],
-                        event['name']['lastname']
-                        )
+        """Retrieve a person from it's identifier in the system."""
+        stored_person = self._registry[demanded_id]
+        returned_person = Person(
+            stored_person['status'],
+            Address(
+                stored_person['address']['street'],
+                stored_person['address']['city']
+            ),
+            Name(
+                stored_person['name']['firstname'],
+                stored_person['name']['lastname']
                 )
-            if event['type'] == EventTimeLine.PERSON_STATUS_CHANGE:
-                returned_person.status = event['newStatus']
+        )
         return returned_person
+
+    def __hash__(self):
+        return id(self)
         
 # }}}
 
@@ -120,15 +129,25 @@ class EventTimeLine:
     def __init__(self):
         """Initialize the inner event list"""
         self.event_list = []
+        self._subscribers = set()
 
     def add_event(self, event_data):
         """Add an event in the event list."""
         event_data['_datetime'] = datetime.datetime.today()
         self.event_list.append(event_data)
+        self._notify_all(event_data)
 
     def add_subscriber(self, object):
-        """Blah Blah Blah"""
-        pass
+        """Allow to an object to subscribe to the event TL. Method *notify* on
+        this object will be called at any event pushed in the event
+        timeline."""
+        self._subscribers.add(object)
+
+    def _notify_all(self, event_data):
+        """Notify all the subscribers of a change, sending them event_data"""
+        for subs in self._subscribers:
+            subs.notify(event_data)
+        
 
     def __iter__(self):
         for e in self.event_list:

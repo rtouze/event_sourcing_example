@@ -86,7 +86,6 @@ class NoopEventTimeLineMock:
         pass
 
     def add_subscriber(self, object):
-        """Blah Blah Blah"""
         pass
 
 class CallCheckingEventTimeLineMock:
@@ -94,11 +93,9 @@ class CallCheckingEventTimeLineMock:
         self.add_event_is_called = False
 
     def add_event(self, event_data):
-        """Blah Blah Blah"""
         self.add_event_is_called = True
 
     def add_subscriber(self, object):
-        """Blah Blah Blah"""
         pass
         
 
@@ -113,7 +110,6 @@ class ParamCheckingEventTimeLineMock:
         assert event_data['name']['lastname'] == "Doe"
 
     def add_subscriber(self, object):
-        """Blah Blah Blah"""
         pass
 
 class ChangeStatusEventTimeLineMock:
@@ -127,7 +123,6 @@ class ChangeStatusEventTimeLineMock:
         assert event_data["newStatus"] == Person.MARRIED
 
     def add_subscriber(self, object):
-        """Blah Blah Blah"""
         pass
 # }}}
 
